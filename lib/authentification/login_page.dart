@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:authentification_firebase/signing_page.dart';
-import 'package:authentification_firebase/authentification_service.dart';
+import 'package:report_internship/authentification/authentification_service.dart';
+import 'package:report_internship/authentification/signing_page.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
@@ -178,3 +178,4 @@ class Login extends StatelessWidget {
       ),
     );
   }
+}
