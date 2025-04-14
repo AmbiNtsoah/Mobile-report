@@ -23,7 +23,7 @@ class Signup extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-         padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
             children: [
               Center(
@@ -33,26 +33,25 @@ class Signup extends StatelessWidget {
                     textStyle: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 32
-                    )
+                      fontSize: 32,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 80,),
-               _emailAddress(),
-               const SizedBox(height: 20,),
-               _password(),
-               const SizedBox(height: 50,),
-               _signup(context),
+              const SizedBox(height: 80),
+              _emailAddress(),
+              const SizedBox(height: 20),
+              _password(),
+              const SizedBox(height: 50),
+              _signup(context),
             ],
           ),
-
+        ),
       ),
-      )
     );
   }
 
-// Widget pour la création du champ de l'email
+  // Widget pour la création du champ de l'email
   Widget _emailAddress() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -64,11 +63,11 @@ class Signup extends StatelessWidget {
             textStyle: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
-              fontSize: 16
-            )
+              fontSize: 16,
+            ),
           ),
         ),
-        const SizedBox(height: 16,),
+        const SizedBox(height: 16),
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
@@ -77,15 +76,15 @@ class Signup extends StatelessWidget {
             hintStyle: const TextStyle(
               color: Color(0xff6A6A6A),
               fontWeight: FontWeight.normal,
-              fontSize: 14
+              fontSize: 14,
             ),
-            fillColor: const Color(0xFF99999D) ,
+            fillColor: const Color(0xFF99999D),
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14)
-            )
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -102,43 +101,41 @@ class Signup extends StatelessWidget {
             textStyle: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
-              fontSize: 16
-            )
+              fontSize: 16,
+            ),
           ),
         ),
-        const SizedBox(height: 16,),
+        const SizedBox(height: 16),
         TextField(
           controller: _passwordController,
           obscureText: true,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFF99999D) ,
+            fillColor: const Color(0xFF99999D),
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14)
-            )
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
-        )
+        ),
       ],
     );
   }
 
-// Widget pour notre boutton d'inscription 
+  // Widget pour notre boutton d'inscription
   Widget _signup(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xff0D6EFD),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          minimumSize: const Size(double.infinity, 60),
-          elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        minimumSize: const Size(double.infinity, 60),
+        elevation: 0,
       ),
       onPressed: () async {
-       await AuthService().signup(
+        await AuthService().signup(
           email: _emailController.text,
           password: _passwordController.text,
-          context: context
+          context: context,
         );
       },
       child: const Text("Inscription"),
@@ -154,31 +151,31 @@ class Signup extends StatelessWidget {
         text: TextSpan(
           children: [
             const TextSpan(
-                text: "Compte éxistant? ",
-                style: TextStyle(
-                  color: Color(0xff6A6A6A),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16
-                ),
+              text: "Compte éxistant? ",
+              style: TextStyle(
+                color: Color(0xff6A6A6A),
+                fontWeight: FontWeight.normal,
+                fontSize: 16,
               ),
-              TextSpan(
-                text: "Connexion",
-                style: const TextStyle(
-                    color: Color.fromARGB(255, 0, 0, 0),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Login()
-                      ),
-                    );
-                  }
+            ),
+            TextSpan(
+              text: "Connexion",
+              style: const TextStyle(
+                color: Color.fromARGB(255, 0, 0, 0),
+                fontWeight: FontWeight.normal,
+                fontSize: 16,
               ),
-          ]
-        )
+              recognizer:
+                  TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
+            ),
+          ],
+        ),
       ),
     );
   }

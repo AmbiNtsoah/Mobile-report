@@ -7,7 +7,7 @@ import 'package:report_internship/authentification/signing_page.dart';
 class Login extends StatelessWidget {
   Login({super.key});
 
-// Enregisrer les text entrée sur les champs.
+  // Enregisrer les text entrée sur les champs.
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -19,7 +19,7 @@ class Login extends StatelessWidget {
       bottomNavigationBar: _signup(context),
       body: SafeArea(
         child: SingleChildScrollView(
-         padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
@@ -30,24 +30,24 @@ class Login extends StatelessWidget {
                     textStyle: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 32
-                    )
+                      fontSize: 32,
+                    ),
                   ),
                 ),
               ),
-              const SizedBox(height: 80,),
-               _emailAddress(),
-               const SizedBox(height: 20,),
-               _password(),
-               const SizedBox(height: 50,),
-               _signin(context),
+              const SizedBox(height: 80),
+              _emailAddress(),
+              const SizedBox(height: 20),
+              _password(),
+              const SizedBox(height: 50),
+              _signin(context),
             ],
           ),
         ),
       ),
     );
   }
-  
+
   // Widget pour le champ de login
   Widget _emailAddress() {
     return Column(
@@ -60,11 +60,11 @@ class Login extends StatelessWidget {
             textStyle: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
-              fontSize: 16
-            )
+              fontSize: 16,
+            ),
           ),
         ),
-        const SizedBox(height: 16,),
+        const SizedBox(height: 16),
         TextField(
           controller: _emailController,
           decoration: InputDecoration(
@@ -73,20 +73,20 @@ class Login extends StatelessWidget {
             hintStyle: const TextStyle(
               color: Color.fromARGB(255, 255, 254, 254),
               fontWeight: FontWeight.normal,
-              fontSize: 14
+              fontSize: 14,
             ),
-            fillColor: const Color(0xFF99999D) ,
+            fillColor: const Color(0xFF99999D),
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14)
-            )
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
-        )
+        ),
       ],
     );
   }
 
-// Widget pour le champ de password
+  // Widget pour le champ de password
   Widget _password() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -98,35 +98,33 @@ class Login extends StatelessWidget {
             textStyle: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.normal,
-              fontSize: 16
-            )
+              fontSize: 16,
+            ),
           ),
         ),
-        const SizedBox(height: 16,),
+        const SizedBox(height: 16),
         TextField(
           obscureText: true,
           controller: _passwordController,
           decoration: InputDecoration(
             filled: true,
-            fillColor: const Color(0xFF99999D) ,
+            fillColor: const Color(0xFF99999D),
             border: OutlineInputBorder(
               borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14)
-            )
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
-        )
+        ),
       ],
     );
   }
 
-// Widget pour le boutton de connexion 
+  // Widget pour le boutton de connexion
   Widget _signin(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xff0D6EFD),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         minimumSize: const Size(double.infinity, 60),
         elevation: 0,
       ),
@@ -134,14 +132,14 @@ class Login extends StatelessWidget {
         await AuthService().signin(
           email: _emailController.text,
           password: _passwordController.text,
-          context: context
+          context: context,
         );
       },
       child: const Text("Connexion"),
     );
   }
 
-// Widget pour rediregier l'user vers l'interface d'inscription
+  // Widget pour rediregier l'user vers l'interface d'inscription
   Widget _signup(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -150,31 +148,31 @@ class Login extends StatelessWidget {
         text: TextSpan(
           children: [
             const TextSpan(
-                text: "Pas encore de compte? ",
-                style: TextStyle(
-                  color: Color(0xff6A6A6A),
-                  fontWeight: FontWeight.normal,
-                  fontSize: 16
-                ),
+              text: "Pas encore de compte? ",
+              style: TextStyle(
+                color: Color(0xff6A6A6A),
+                fontWeight: FontWeight.normal,
+                fontSize: 16,
               ),
-              TextSpan(
-                text: "Inscription",
-                style: const TextStyle(
-                    color: Color(0xff1A1D1E),
-                    fontWeight: FontWeight.normal,
-                    fontSize: 16
-                  ),
-                  recognizer: TapGestureRecognizer()..onTap = () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Signup()
-                      ),
-                    );
-                  }
+            ),
+            TextSpan(
+              text: "Inscription",
+              style: const TextStyle(
+                color: Color(0xff1A1D1E),
+                fontWeight: FontWeight.normal,
+                fontSize: 16,
               ),
-          ]
-        )
+              recognizer:
+                  TapGestureRecognizer()
+                    ..onTap = () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Signup()),
+                      );
+                    },
+            ),
+          ],
+        ),
       ),
     );
   }

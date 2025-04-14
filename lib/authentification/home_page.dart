@@ -12,34 +12,34 @@ class Home extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                  'Bienvenue ✨',
-                  style: GoogleFonts.raleway(
-                    textStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20
-                    )
+                'Bienvenue ✨',
+                style: GoogleFonts.raleway(
+                  textStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                const SizedBox(height: 10,),
-                // Affiche l'email de l'utilisateur connecté
-                Text(
-                  FirebaseAuth.instance.currentUser!.email!.toString(),
-                  style: GoogleFonts.raleway(
-                    textStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20
-                    )
+              ),
+              const SizedBox(height: 10),
+              // Affiche l'email de l'utilisateur connecté
+              Text(
+                FirebaseAuth.instance.currentUser!.email!.toString(),
+                style: GoogleFonts.raleway(
+                  textStyle: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
                   ),
                 ),
-                 const SizedBox(height: 30,),
-                _logout(context)
+              ),
+              const SizedBox(height: 30),
+              _logout(context),
             ],
           ),
         ),
@@ -47,14 +47,12 @@ class Home extends StatelessWidget {
     );
   }
 
-// Widget pour le boutton de déconnexion
+  // Widget pour le boutton de déconnexion
   Widget _logout(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color(0xff0D6EFD),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         minimumSize: const Size(double.infinity, 60),
         elevation: 0,
       ),
