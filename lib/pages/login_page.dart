@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:report_internship/authentification/authentification_service.dart';
-import 'package:report_internship/authentification/signing_page.dart';
+import 'package:report_internship/pages/authentification_service.dart';
+import 'package:report_internship/pages/signing_page.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
