@@ -13,35 +13,42 @@ class Login extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      bottomNavigationBar: _signup(context),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Connexion',
-                  style: GoogleFonts.raleway(
-                    textStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 32,
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.teal,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: Scaffold(
+        resizeToAvoidBottomInset: true,
+        bottomNavigationBar: _signup(context),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Center(
+                  child: Text(
+                    'Connexion',
+                    style: GoogleFonts.raleway(
+                      textStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 32,
+                      ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 80),
-              _emailAddress(),
-              const SizedBox(height: 20),
-              _password(),
-              const SizedBox(height: 50),
-              _signin(context),
-            ],
+                const SizedBox(height: 80),
+                _emailAddress(),
+                const SizedBox(height: 20),
+                _password(),
+                const SizedBox(height: 50),
+                _signin(context),
+              ],
+            ),
           ),
         ),
       ),
@@ -58,7 +65,6 @@ class Login extends StatelessWidget {
           'Email Address',
           style: GoogleFonts.raleway(
             textStyle: const TextStyle(
-              color: Colors.black,
               fontWeight: FontWeight.normal,
               fontSize: 16,
             ),
@@ -69,7 +75,7 @@ class Login extends StatelessWidget {
           controller: _emailController,
           decoration: InputDecoration(
             filled: true,
-            hintText: 'mccistudenexemple@gmail.com',
+            hintText: 'mccistudentexemple@gmail.com',
             hintStyle: const TextStyle(
               color: Color.fromARGB(255, 255, 254, 254),
               fontWeight: FontWeight.normal,
@@ -96,7 +102,6 @@ class Login extends StatelessWidget {
           'Password',
           style: GoogleFonts.raleway(
             textStyle: const TextStyle(
-              color: Colors.black,
               fontWeight: FontWeight.normal,
               fontSize: 16,
             ),
@@ -123,7 +128,7 @@ class Login extends StatelessWidget {
   Widget _signin(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xff0D6EFD),
+        backgroundColor: Colors.teal,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         minimumSize: const Size(double.infinity, 60),
         elevation: 0,
@@ -158,7 +163,7 @@ class Login extends StatelessWidget {
             TextSpan(
               text: "Inscription",
               style: const TextStyle(
-                color: Color(0xff1A1D1E),
+                color: Colors.teal,
                 fontWeight: FontWeight.normal,
                 fontSize: 16,
               ),
