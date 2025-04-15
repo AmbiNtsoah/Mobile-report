@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'authentification_service.dart';
@@ -66,8 +67,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 //   }
 // }
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
+
+  @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  // Specification de la collection
+  final CollectionReference fetchData = FirebaseFirestore.instance.collection(
+    "daily_report",
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -85,37 +96,82 @@ class Home extends StatelessWidget {
           title: Text("Report Internship Activity"),
           centerTitle: true,
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Container(
-                width: double.infinity,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 10.0),
-                  child: Card(
-                    child: Padding(
-                      padding: EdgeInsets.all(20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Day 1",
+        // Creation de Card qui va display nos Journey
+        // body: Padding(
+        //   padding: const EdgeInsets.all(20.0),
+        //   child: Column(
+        //     children: [
+        //       Container(
+        //         width: double.infinity,
+        //         child: Padding(
+        //           padding: EdgeInsets.symmetric(vertical: 10.0),
+        //           child: Card(
+        //             child: Padding(
+        //               padding: EdgeInsets.all(20.0),
+        //               child: Column(
+        //                 crossAxisAlignment: CrossAxisAlignment.start,
+        //                 children: [
+        //                   Text(
+        //                     "Day 1",
+        //                     style: TextStyle(
+        //                       fontSize: 18,
+        //                       fontWeight: FontWeight.bold,
+        //                       color: Colors.teal,
+        //                     ),
+        //                   ),
+        //                   Text("Description of activities in the company "),
+        //                 ],
+        //               ),
+        //             ),
+        //           ),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
+        body: StreamBuilder(
+          stream: fetchData.snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
+            if (streamSnapshot.hasData) {
+              return ListView.builder(
+                itemCount: streamSnapshot.data!.docs.length,
+                itemBuilder: (context, index) {
+                  final DocumentSnapshot documentSnapshot =
+                      streamSnapshot.data!.docs[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          title: Text(
+                            "Jour : ${documentSnapshot['day']}",
                             style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
                               color: Colors.teal,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Text("Description of activities in the company "),
-                        ],
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 5),
+                              Text("Activités : ${documentSnapshot['activity']}"),
+                              Text("Date : ${documentSnapshot['date']}"),
+                              Text("Lieu : ${documentSnapshot['lieu']}"),
+                              Text("Compétences : ${documentSnapshot['skills']}"),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+                  );
+                },
+              );
+            }
+            return Center(child: CircularProgressIndicator());
+          },
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {},
