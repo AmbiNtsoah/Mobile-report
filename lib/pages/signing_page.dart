@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'authentification_service.dart';
+import '../authentification_service.dart';
 import 'login_page.dart';
 
 class Signup extends StatelessWidget {
@@ -13,6 +13,7 @@ class Signup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Signing Page",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

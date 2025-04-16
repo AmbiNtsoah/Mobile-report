@@ -1,7 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import 'authentification_service.dart';
+import '../authentification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
@@ -80,6 +82,23 @@ class _HomeState extends State<Home> {
     "daily_report",
   );
 
+  Future<void> addJourney() async {
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AddJourneyDialog();
+      },
+    );
+  }
+
+  // Déclaration pour les inputs
+  TextEditingController dayController = TextEditingController();
+  TextEditingController activityController = TextEditingController();
+  TextEditingController dateController = TextEditingController();
+  TextEditingController lieuController = TextEditingController();
+  TextEditingController skillsController = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -92,43 +111,12 @@ class _HomeState extends State<Home> {
         ),
       ),
       home: Scaffold(
+        drawer: Drawer(),
         appBar: AppBar(
+          backgroundColor: Colors.teal,
           title: Text("Report Internship Activity"),
           centerTitle: true,
         ),
-        // Creation de Card qui va display nos Journey
-        // body: Padding(
-        //   padding: const EdgeInsets.all(20.0),
-        //   child: Column(
-        //     children: [
-        //       Container(
-        //         width: double.infinity,
-        //         child: Padding(
-        //           padding: EdgeInsets.symmetric(vertical: 10.0),
-        //           child: Card(
-        //             child: Padding(
-        //               padding: EdgeInsets.all(20.0),
-        //               child: Column(
-        //                 crossAxisAlignment: CrossAxisAlignment.start,
-        //                 children: [
-        //                   Text(
-        //                     "Day 1",
-        //                     style: TextStyle(
-        //                       fontSize: 18,
-        //                       fontWeight: FontWeight.bold,
-        //                       color: Colors.teal,
-        //                     ),
-        //                   ),
-        //                   Text("Description of activities in the company "),
-        //                 ],
-        //               ),
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
         body: StreamBuilder(
           stream: fetchData.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
@@ -157,12 +145,17 @@ class _HomeState extends State<Home> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              Text("Activités : ${documentSnapshot['activity']}"),
-                              Text("Date : ${documentSnapshot['date']}"),
+                              Text(
+                                "Activités : ${documentSnapshot['activity']}",
+                              ),
+                              Text("Date : ${(documentSnapshot['date'] as Timestamp).toDate()}"),
                               Text("Lieu : ${documentSnapshot['lieu']}"),
-                              Text("Compétences : ${documentSnapshot['skills']}"),
+                              Text(
+                                "Compétences : ${documentSnapshot['skills']}",
+                              ),
                             ],
                           ),
+                          trailing: Icon(Icons.delete, color: Colors.red),
                         ),
                       ),
                     ),
@@ -174,17 +167,75 @@ class _HomeState extends State<Home> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {},
           child: Icon(Icons.add),
+          onPressed: addJourney,
           tooltip: "Add",
         ),
         bottomNavigationBar: NavigationBar(
           destinations: [
             NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-            NavigationDestination(icon: Icon(Icons.person), label: "Profile"),
+            NavigationDestination(
+              icon: Icon(Icons.addchart),
+              label: "Redaction",
+            ),
           ],
         ),
       ),
     );
+  }
+
+  // Modal dialogue qui va permettre d'ajouter nos journées.
+  Dialog AddJourneyDialog() {
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.teal[900],
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: dataFirebaseInput("ex: Day 1", "Entrer le jour d'activité", dayController),
+      ),
+    );
+  }
+
+  Padding dataFirebaseInput(hint, label, controller) {
+    return Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Add Journey",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(Icons.close),
+                ),
+              ],
+            ),
+            TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: hint,
+                labelText: label,
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(color: Colors.teal, width: 2),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: BorderSide(color: Colors.white, width: 2),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
   }
 }
