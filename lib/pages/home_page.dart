@@ -86,7 +86,13 @@ class _HomeState extends State<Home> {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddJourneyDialog();
+        return AddJourneyDialog(context: context, onPressed: () {
+          String day = dayController.text;
+          String activity = activityController.text;
+          String date = dateController.text;
+          String lieu = lieuController.text;
+          String skills = skillsController.text;
+        });
       },
     );
   }
@@ -97,7 +103,6 @@ class _HomeState extends State<Home> {
   TextEditingController dateController = TextEditingController();
   TextEditingController lieuController = TextEditingController();
   TextEditingController skillsController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +153,9 @@ class _HomeState extends State<Home> {
                               Text(
                                 "Activités : ${documentSnapshot['activity']}",
                               ),
-                              Text("Date : ${(documentSnapshot['date'] as Timestamp).toDate()}"),
+                              Text(
+                                "Date : ${(documentSnapshot['date'] as Timestamp).toDate()}",
+                              ),
                               Text("Lieu : ${documentSnapshot['lieu']}"),
                               Text(
                                 "Compétences : ${documentSnapshot['skills']}",
@@ -185,57 +192,98 @@ class _HomeState extends State<Home> {
   }
 
   // Modal dialogue qui va permettre d'ajouter nos journées.
-  Dialog AddJourneyDialog() {
+  Dialog AddJourneyDialog({
+    required BuildContext context,
+    required VoidCallback onPressed,
+  }) {
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Container(
+        padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.teal[900],
           borderRadius: BorderRadius.circular(20),
         ),
-        child: dataFirebaseInput("ex: Day 1", "Entrer le jour d'activité", dayController),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Add Journey",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+              SizedBox(height: 10),
+              dataFirebaseInput(
+                "ex: Day 1",
+                "Entrer le jour d'activité",
+                dayController,
+              ),
+              dataFirebaseInput(
+                "ex: Monitoring d'une Database",
+                "Activités réalisées",
+                activityController,
+              ),
+              dataFirebaseInput(
+                "ex: 25/04/2025",
+                "Date de la journée",
+                dateController,
+              ),
+              dataFirebaseInput("ex: Ebène, Maurice", "Lieu", lieuController),
+              dataFirebaseInput(
+                "ex: Flutter, Java",
+                "Compétences acquise",
+                skillsController,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: onPressed,
+                child: Text("Ajouter"),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
 
-  Padding dataFirebaseInput(hint, label, controller) {
+  Padding dataFirebaseInput(
+    String hint,
+    String label,
+    TextEditingController controller,
+  ) {
     return Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "Add Journey",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: Icon(Icons.close),
-                ),
-              ],
-            ),
-            TextFormField(
-              controller: controller,
-              decoration: InputDecoration(
-                hintText: hint,
-                labelText: label,
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(color: Colors.teal, width: 2),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide(color: Colors.white, width: 2),
-                ),
-              ),
-            ),
-          ],
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: TextFormField(
+        controller: controller,
+        style: TextStyle(color: Colors.white),
+        decoration: InputDecoration(
+          hintText: hint,
+          labelText: label,
+          labelStyle: TextStyle(color: Colors.white),
+          hintStyle: TextStyle(color: Colors.white70),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.tealAccent, width: 2),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(20),
+            borderSide: BorderSide(color: Colors.white, width: 2),
+          ),
         ),
-      );
+      ),
+    );
   }
 }
