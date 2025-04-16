@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-import '../authentification_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+// import '../authentification_service.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:flutter/material.dart';
 // import 'package:google_fonts/google_fonts.dart';
 
@@ -89,9 +89,17 @@ class _HomeState extends State<Home> {
         return AddJourneyDialog(context: context, onPressed: () {
           String day = dayController.text;
           String activity = activityController.text;
-          String date = dateController.text;
           String lieu = lieuController.text;
           String skills = skillsController.text;
+          
+          // DateTime dateFormat = DateF
+          fetchData.add({
+            'day': day,
+            'activity': activity,
+            'date': FieldValue.serverTimestamp(),
+            'lieu': lieu,
+            'skills': skills,
+          });
         });
       },
     );
@@ -100,7 +108,6 @@ class _HomeState extends State<Home> {
   // Déclaration pour les inputs
   TextEditingController dayController = TextEditingController();
   TextEditingController activityController = TextEditingController();
-  TextEditingController dateController = TextEditingController();
   TextEditingController lieuController = TextEditingController();
   TextEditingController skillsController = TextEditingController();
 
@@ -235,11 +242,6 @@ class _HomeState extends State<Home> {
                 "ex: Monitoring d'une Database",
                 "Activités réalisées",
                 activityController,
-              ),
-              dataFirebaseInput(
-                "ex: 25/04/2025",
-                "Date de la journée",
-                dateController,
               ),
               dataFirebaseInput("ex: Ebène, Maurice", "Lieu", lieuController),
               dataFirebaseInput(
