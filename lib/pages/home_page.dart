@@ -2,72 +2,9 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-
-// import '../authentification_service.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
-// import 'package:flutter/material.dart';
-// import 'package:google_fonts/google_fonts.dart';
-
-// class Home extends StatelessWidget {
-//   const Home({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: SafeArea(
-//         child: Padding(
-//           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-//           child: Column(
-//             mainAxisAlignment: MainAxisAlignment.center,
-//             children: [
-//               Text(
-//                 'Bienvenue ✨',
-//                 style: GoogleFonts.raleway(
-//                   textStyle: const TextStyle(
-//                     color: Colors.black,
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 20,
-//                   ),
-//                 ),
-//               ),
-//               const SizedBox(height: 10),
-//               // Affiche l'email de l'utilisateur connecté
-//               Text(
-//                 FirebaseAuth.instance.currentUser!.email!.toString(),
-//                 style: GoogleFonts.raleway(
-//                   textStyle: const TextStyle(
-//                     color: Colors.black,
-//                     fontWeight: FontWeight.bold,
-//                     fontSize: 20,
-//                   ),
-//                 ),
-//               ),
-//               const SizedBox(height: 30),
-//               _logout(context),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-
-//   // Widget pour le boutton de déconnexion
-//   Widget _logout(BuildContext context) {
-//     return ElevatedButton(
-//       style: ElevatedButton.styleFrom(
-//         backgroundColor: const Color(0xff0D6EFD),
-//         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-//         minimumSize: const Size(double.infinity, 60),
-//         elevation: 0,
-//       ),
-//       onPressed: () async {
-//         await AuthService().signout(context: context);
-//       },
-//       child: const Text("Déconnexion"),
-//     );
-//   }
-// }
+import '../authentification_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -86,24 +23,93 @@ class _HomeState extends State<Home> {
     return showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AddJourneyDialog(context: context, onPressed: () {
+        return addJourneyDialog(
+          context: context,
+          onPressed: () {
+            String day = dayController.text;
+            String activity = activityController.text;
+            String lieu = lieuController.text;
+            String skills = skillsController.text;
+
+            fetchData.add({
+              'day': day,
+              'activity': activity,
+              'date': FieldValue.serverTimestamp(),
+              'lieu': lieu,
+              'skills': skills,
+            });
+
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> deleteJourney(String docId) async {
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.teal[900],
+        title: Text(
+          "Supprimer ce rapport ?",
+          style: TextStyle(color: Colors.white),
+        ),
+        content: Text(
+          "Cette action est irréversible.",
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Annuler", style: TextStyle(color: Colors.grey[300])),
+          ),
+          TextButton(
+            onPressed: () async {
+              await fetchData.doc(docId).delete();
+              Navigator.pop(context);
+            },
+            child: Text("Supprimer", style: TextStyle(color: Colors.redAccent)),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
+  // On préremplit les contrôleurs
+  dayController.text = documentSnapshot['day'];
+  activityController.text = documentSnapshot['activity'];
+  lieuController.text = documentSnapshot['lieu'];
+  skillsController.text = documentSnapshot['skills'];
+
+  return showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return addJourneyDialog(
+        context: context,
+        onPressed: () async {
           String day = dayController.text;
           String activity = activityController.text;
           String lieu = lieuController.text;
           String skills = skillsController.text;
-          
-          // DateTime dateFormat = DateF
-          fetchData.add({
+
+          await fetchData.doc(documentSnapshot.id).update({
             'day': day,
             'activity': activity,
-            'date': FieldValue.serverTimestamp(),
             'lieu': lieu,
             'skills': skills,
           });
-        });
-      },
-    );
-  }
+
+          Navigator.pop(context);
+        },
+      );
+    },
+  );
+}
+
 
   // Déclaration pour les inputs
   TextEditingController dayController = TextEditingController();
@@ -123,7 +129,51 @@ class _HomeState extends State<Home> {
         ),
       ),
       home: Scaffold(
-        drawer: Drawer(),
+        drawer: SafeArea(
+          child: Drawer(
+            child: ListView(
+              padding: EdgeInsets.zero,
+              children: [
+                DrawerHeader(
+                  decoration: BoxDecoration(color: Colors.teal[800]),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.account_circle, size: 50, color: Colors.white),
+                      SizedBox(height: 10),
+                      Text(
+                        'Bienvenue ✨',
+                        style: GoogleFonts.raleway(
+                          textStyle: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        FirebaseAuth.instance.currentUser!.email!.toString(),
+                        style: GoogleFonts.raleway(
+                          textStyle: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text("Déconnexion"),
+                  onTap: () async {
+                    Navigator.pop(context); // Ferme le drawer
+                    await AuthService().signout(context: context);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
         appBar: AppBar(
           backgroundColor: Colors.teal,
           title: Text("Report Internship Activity"),
@@ -169,7 +219,23 @@ class _HomeState extends State<Home> {
                               ),
                             ],
                           ),
-                          trailing: Icon(Icons.delete, color: Colors.red),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.teal),
+                                onPressed: () {
+                                  editJourney(documentSnapshot);
+                                },
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  deleteJourney(documentSnapshot.id);
+                                },
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -181,9 +247,9 @@ class _HomeState extends State<Home> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          child: Icon(Icons.add),
           onPressed: addJourney,
           tooltip: "Add",
+          child: Icon(Icons.add),
         ),
         bottomNavigationBar: NavigationBar(
           destinations: [
@@ -199,7 +265,7 @@ class _HomeState extends State<Home> {
   }
 
   // Modal dialogue qui va permettre d'ajouter nos journées.
-  Dialog AddJourneyDialog({
+  Dialog addJourneyDialog({
     required BuildContext context,
     required VoidCallback onPressed,
   }) {
@@ -250,10 +316,7 @@ class _HomeState extends State<Home> {
                 skillsController,
               ),
               SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: onPressed,
-                child: Text("Ajouter"),
-              ),
+              ElevatedButton(onPressed: onPressed, child: Text("Ajouter")),
             ],
           ),
         ),
