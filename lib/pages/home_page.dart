@@ -1,11 +1,13 @@
+// Importation des packages nécessaires
 import 'dart:async';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:report_internship/pages/redaction_page.dart';
 import '../authentification_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// Widget principal de la page d'accueil
 class Home extends StatefulWidget {
   const Home({super.key});
 
@@ -14,11 +16,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // Specification de la collection
-  final CollectionReference fetchData = FirebaseFirestore.instance.collection(
-    "daily_report",
-  );
+  // Référence à la collection Firestore pour les rapports quotidiens
+  final CollectionReference fetchData = FirebaseFirestore.instance.collection("daily_report");
 
+  // Fonction pour afficher un dialogue d'ajout de journée
   Future<void> addJourney() async {
     return showDialog(
       context: context,
@@ -26,96 +27,103 @@ class _HomeState extends State<Home> {
         return addJourneyDialog(
           context: context,
           onPressed: () {
+            // Récupération des données depuis les contrôleurs
             String day = dayController.text;
             String activity = activityController.text;
             String lieu = lieuController.text;
             String skills = skillsController.text;
 
+            // Envoi des données à Firestore
             fetchData.add({
               'day': day,
               'activity': activity,
-              'date': FieldValue.serverTimestamp(),
+              'date': FieldValue.serverTimestamp(), // Ajout automatique de la date serveur
               'lieu': lieu,
               'skills': skills,
             });
-
           },
         );
       },
     );
   }
 
+  // Fonction pour afficher une alerte avant suppression
   Future<void> deleteJourney(String docId) async {
-  return showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        backgroundColor: Colors.teal[900],
-        title: Text(
-          "Supprimer ce rapport ?",
-          style: TextStyle(color: Colors.white),
-        ),
-        content: Text(
-          "Cette action est irréversible.",
-          style: TextStyle(color: Colors.white70),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Annuler", style: TextStyle(color: Colors.grey[300])),
-          ),
-          TextButton(
-            onPressed: () async {
-              await fetchData.doc(docId).delete();
-              Navigator.pop(context);
-            },
-            child: Text("Supprimer", style: TextStyle(color: Colors.redAccent)),
-          ),
-        ],
-      );
-    },
-  );
-}
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          backgroundColor: Colors.teal[900],
+          title: Text("Supprimer ce rapport ?", style: TextStyle(color: Colors.white)),
+          content: Text("Cette action est irréversible.", style: TextStyle(color: Colors.white70)),
+          actions: [
+            // Bouton pour annuler la suppression
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text("Annuler", style: TextStyle(color: Colors.grey[300])),
+            ),
+            // Bouton pour confirmer la suppression
+            TextButton(
+              onPressed: () async {
+                await fetchData.doc(docId).delete();
+                Navigator.pop(context);
+              },
+              child: Text("Supprimer", style: TextStyle(color: Colors.redAccent)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
-Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
-  // On préremplit les contrôleurs
-  dayController.text = documentSnapshot['day'];
-  activityController.text = documentSnapshot['activity'];
-  lieuController.text = documentSnapshot['lieu'];
-  skillsController.text = documentSnapshot['skills'];
+  // Fonction pour modifier un rapport existant
+  Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
+    // Remplissage des champs avec les données existantes
+    dayController.text = documentSnapshot['day'];
+    activityController.text = documentSnapshot['activity'];
+    lieuController.text = documentSnapshot['lieu'];
+    skillsController.text = documentSnapshot['skills'];
 
-  return showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return addJourneyDialog(
-        context: context,
-        onPressed: () async {
-          String day = dayController.text;
-          String activity = activityController.text;
-          String lieu = lieuController.text;
-          String skills = skillsController.text;
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return addJourneyDialog(
+          context: context,
+          onPressed: () async {
+            String day = dayController.text;
+            String activity = activityController.text;
+            String lieu = lieuController.text;
+            String skills = skillsController.text;
 
-          await fetchData.doc(documentSnapshot.id).update({
-            'day': day,
-            'activity': activity,
-            'lieu': lieu,
-            'skills': skills,
-          });
+            // Mise à jour des données dans Firestore
+            await fetchData.doc(documentSnapshot.id).update({
+              'day': day,
+              'activity': activity,
+              'lieu': lieu,
+              'skills': skills,
+            });
 
-          Navigator.pop(context);
-        },
-      );
-    },
-  );
-}
+            Navigator.pop(context);
+          },
+        );
+      },
+    );
+  }
 
-
-  // Déclaration pour les inputs
+  // Contrôleurs pour gérer la saisie utilisateur dans les formulaires
   TextEditingController dayController = TextEditingController();
   TextEditingController activityController = TextEditingController();
   TextEditingController lieuController = TextEditingController();
   TextEditingController skillsController = TextEditingController();
+
+  // Gestion de la navigation dans le menu en bas
+  int currentIndex = 0;
+
+  // Pages disponibles via le menu (ici seulement RedactionPage utilisée)
+  final List<Widget> pages = [
+    RedactionPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -129,6 +137,7 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
         ),
       ),
       home: Scaffold(
+        // Drawer (menu latéral) avec infos utilisateur et bouton de déconnexion
         drawer: SafeArea(
           child: Drawer(
             child: ListView(
@@ -141,32 +150,24 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
                     children: [
                       Icon(Icons.account_circle, size: 50, color: Colors.white),
                       SizedBox(height: 10),
+                      Text('Bienvenue ✨', style: GoogleFonts.raleway(
+                        textStyle: TextStyle(color: Colors.white, fontSize: 18),
+                      )),
                       Text(
-                        'Bienvenue ✨',
+                        FirebaseAuth.instance.currentUser!.email!,
                         style: GoogleFonts.raleway(
-                          textStyle: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      Text(
-                        FirebaseAuth.instance.currentUser!.email!.toString(),
-                        style: GoogleFonts.raleway(
-                          textStyle: TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                          ),
+                          textStyle: TextStyle(color: Colors.white70, fontSize: 14),
                         ),
                       ),
                     ],
                   ),
                 ),
+                // Bouton de déconnexion
                 ListTile(
                   leading: Icon(Icons.logout),
                   title: Text("Déconnexion"),
                   onTap: () async {
-                    Navigator.pop(context); // Ferme le drawer
+                    Navigator.pop(context); // Ferme le menu
                     await AuthService().signout(context: context);
                   },
                 ),
@@ -179,6 +180,7 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
           title: Text("Report Internship Activity"),
           centerTitle: true,
         ),
+        // Affichage en temps réel des rapports depuis Firestore
         body: StreamBuilder(
           stream: fetchData.snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> streamSnapshot) {
@@ -186,8 +188,7 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
               return ListView.builder(
                 itemCount: streamSnapshot.data!.docs.length,
                 itemBuilder: (context, index) {
-                  final DocumentSnapshot documentSnapshot =
-                      streamSnapshot.data!.docs[index];
+                  final DocumentSnapshot documentSnapshot = streamSnapshot.data!.docs[index];
                   return Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Material(
@@ -195,6 +196,7 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: ListTile(
+                          // Titre avec le jour
                           title: Text(
                             "Jour : ${documentSnapshot['day']}",
                             style: TextStyle(
@@ -203,22 +205,18 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          // Sous-titre avec les autres infos
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               SizedBox(height: 5),
-                              Text(
-                                "Activités : ${documentSnapshot['activity']}",
-                              ),
-                              Text(
-                                "Date : ${(documentSnapshot['date'] as Timestamp).toDate()}",
-                              ),
+                              Text("Activités : ${documentSnapshot['activity']}"),
+                              Text("Date : ${(documentSnapshot['date'] as Timestamp).toDate()}"),
                               Text("Lieu : ${documentSnapshot['lieu']}"),
-                              Text(
-                                "Compétences : ${documentSnapshot['skills']}",
-                              ),
+                              Text("Compétences : ${documentSnapshot['skills']}"),
                             ],
                           ),
+                          // Actions : modifier ou supprimer le rapport
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -243,28 +241,34 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
                 },
               );
             }
+            // Affiche un spinner si les données ne sont pas encore chargées
             return Center(child: CircularProgressIndicator());
           },
         ),
+        // Bouton flottant pour ajouter un nouveau rapport
         floatingActionButton: FloatingActionButton(
           onPressed: addJourney,
           tooltip: "Add",
           child: Icon(Icons.add),
         ),
+        // Barre de navigation inférieure (Home et Rédaction)
         bottomNavigationBar: NavigationBar(
+          selectedIndex: currentIndex,
+          onDestinationSelected: (int index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
           destinations: [
             NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-            NavigationDestination(
-              icon: Icon(Icons.addchart),
-              label: "Redaction",
-            ),
+            NavigationDestination(icon: Icon(Icons.addchart), label: "Redaction"),
           ],
         ),
       ),
     );
   }
 
-  // Modal dialogue qui va permettre d'ajouter nos journées.
+  // Composant personnalisé de dialogue pour ajouter ou modifier une journée
   Dialog addJourneyDialog({
     required BuildContext context,
     required VoidCallback onPressed,
@@ -281,17 +285,11 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
+              // En-tête du dialogue
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    "Add Journey",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: Colors.white,
-                    ),
-                  ),
+                  Text("Add Journey", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.white)),
                   IconButton(
                     onPressed: () => Navigator.pop(context),
                     icon: Icon(Icons.close, color: Colors.white),
@@ -299,22 +297,11 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
                 ],
               ),
               SizedBox(height: 10),
-              dataFirebaseInput(
-                "ex: Day 1",
-                "Entrer le jour d'activité",
-                dayController,
-              ),
-              dataFirebaseInput(
-                "ex: Monitoring d'une Database",
-                "Activités réalisées",
-                activityController,
-              ),
+              // Champs de saisie personnalisés
+              dataFirebaseInput("ex: Day 1", "Entrer le jour d'activité", dayController),
+              dataFirebaseInput("ex: Monitoring d'une Database", "Activités réalisées", activityController),
               dataFirebaseInput("ex: Ebène, Maurice", "Lieu", lieuController),
-              dataFirebaseInput(
-                "ex: Flutter, Java",
-                "Compétences acquise",
-                skillsController,
-              ),
+              dataFirebaseInput("ex: Flutter, Java", "Compétences acquise", skillsController),
               SizedBox(height: 20),
               ElevatedButton(onPressed: onPressed, child: Text("Ajouter")),
             ],
@@ -324,6 +311,7 @@ Future<void> editJourney(DocumentSnapshot documentSnapshot) async {
     );
   }
 
+  // Fonction pour générer les champs de formulaire Firebase (réutilisable)
   Padding dataFirebaseInput(
     String hint,
     String label,
